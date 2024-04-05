@@ -14,10 +14,20 @@ repeatMe = do
 ------------------------- Exercise 2
 
 lizzy :: IO ()
-lizzy = undefined
+lizzy = do
+  putStrLn welcome
+  lizzyLoop
 
 lizzyLoop :: IO ()
-lizzyLoop = undefined
+lizzyLoop = do
+  str <- getLine
+  if str == "Exit"
+  then do
+    putStrLn exit
+  else do
+    putStrLn (response str)
+    lizzyLoop
+  
 
 
 ------------------------- Exercise 3
@@ -182,9 +192,21 @@ substitute x n (Apply m p) = Apply (substitute x n m) (substitute x n p)
 
 
 beta :: Term -> [Term]
-beta = undefined
+beta (Apply (Lambda x n) m) = [substitute x m n] ++ [Apply (Lambda x n') m | n' <- beta n] ++ [Apply (Lambda x n) m' | m' <- beta m]
+beta (Apply n m) = [Apply n' m | n' <- beta n] ++ [Apply n m' | m' <- beta m]
+beta (Lambda x n) = [Lambda x n' | n' <- beta n]
+beta (Variable _) = []
 
 normalize :: Term -> IO ()
-normalize = undefined
+normalize n = do
+  print n
+  let h = beta n
+  if null h == False
+  then do 
+    normalize (head h)
+  else do
+    return ()
+  
+  
 
 
